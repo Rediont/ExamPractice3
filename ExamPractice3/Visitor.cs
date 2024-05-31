@@ -9,23 +9,23 @@ namespace ExamPractice3
     public class Visitor
     {
         public string Name { get; private set; }
-        private int? _roomId;
-        public int? RoomId { get { return _roomId; } set { if (value > 0 && value < 11) { _roomId = value; } } }
+        public int? RoomId { get; set; }
         public Visitor(string name, int? roomId = null)
         {
             Name = name;
-            _roomId = roomId;
+            RoomId = roomId;
         }
 
-        public async Task<bool> StayInRoom(int time) 
+        public async Task<bool> StayInRoom(int time)
         {
-            Task.Delay(time * 1000);
+            await Task.Delay(time * 1000);
             return true;
         }
 
         public void CheckOut()
         {
-            _roomId = 0;
+            RoomId = null;
         }
     }
 }
+

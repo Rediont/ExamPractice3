@@ -1,35 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ExamPractice3
 {
     public class Reception
     {
-        Dictionary<int,Room> rooms;
-        List<string> Log;
-        public delegate void RoomStatusHandler(Room room);
+        private string _path = "log.{date}.json";
+        private Dictionary<int, Room> rooms = new Dictionary<int, Room>();
+        private List<LogInfo> logs = new List<LogInfo>();
+
+        public delegate Task RoomStatusHandler(Room room);
         public event RoomStatusHandler OnCheckIn;
         public event RoomStatusHandler OnCheckOut;
 
-        public bool CheckIn(int roomId, Visitor visitor,int daysRented)
+        public Reception()
         {
-            if (rooms.ContainsKey(roomId)) 
+            rooms.Add(1, new GoodRoom(1, "Room 1", 100));
+            rooms.Add(2, new GoodRoom(2, "Room 2", 200));
+            rooms.Add(3, new GoodRoom(3, "Room 3", 300));
+            rooms.Add(4, new HighEndRoom(4, "Room 4", 400));
+
+            OnCheckOut += CleanUp;
+        }
+
+        public async Task<bool> CheckIn(int roomId, Visitor visitor, int daysRented)
+        {
+            if (rooms.ContainsKey(roomId))
             {
                 Room room = rooms[roomId];
-                if (rooms[room._id].Status == "Available")
+                if (room.Status == RoomStatus.Available)
                 {
                     visitor.RoomId = roomId;
                     room.Occupier = visitor.Name;
-                    rooms[room._id].Status = "Occupied";
-                    Log.Add($"{room._name} is occupied by {visitor.Name}");
+                    room.Status = RoomStatus.Occupied;
+
+                    logs.Add(new LogInfo(visitor, roomId, "check in"));
+
                     return true;
                 }
                 else
                 {
-                    throw new Exception("Room unaviable");
+                    while (room.Status == RoomStatus.Cleaning && room.Status != RoomStatus.Occupied)
+                    {
+                        Console.WriteLine("Room is not available, please wait");
+
+                        await Task.Delay(1000);
+                    }
+
+                    visitor.RoomId = roomId;
+                    room.Occupier = visitor.Name;
+                    room.Status = RoomStatus.Occupied;
+
+                    logs.Add(new LogInfo(visitor, roomId, "check in"));
+                    return true;
                 }
             }
             else
@@ -38,38 +66,45 @@ namespace ExamPractice3
             }
         }
 
-        public void StartCleanUp(Room room)
+        public async Task CleanUp(Room room)
         {
-            room.Status = "Cleaning";
-            Log.Add($"Started cleaning of {room._name}");
+            room.Status = RoomStatus.Cleaning;
+            logs.Add(new LogInfo("Cleaning", "Cleaning has started"));
+            await Task.Delay(5000);
+            logs.Add(new LogInfo("Cleaning", "Cleaning has ended"));
+            room.Status = RoomStatus.Available;
         }
 
-        public bool CheckOut(int roomId, Visitor visitor, int daysRented)
+        public bool CheckOut(int roomId, Visitor visitor)
         {
-            if (CheckIn(roomId, visitor, daysRented))
+            var isRoomExists = rooms.TryGetValue(roomId, out Room room);
+            if (isRoomExists && room!.Occupier == visitor.Name)
             {
-                Room room = rooms[rooms.Keys.FirstOrDefault(x => x == roomId)];
                 visitor.CheckOut();
                 room.Occupier = null;
-                rooms[room._id].Status = "Available";
-                Log.Add($"{visitor.Name} checked out from {room._name}");
+                rooms[room.Id].Status = RoomStatus.Available;
+                logs.Add(new LogInfo(visitor, roomId, "check out"));
+
+                OnCheckOut?.Invoke(room);
                 return true;
             }
             else
             {
-                throw new Exception("somethig went wrong");
+                Console.WriteLine("Room is not occupied by this visitor");
+                return false;
             }
+
         }
 
-        public void Save(string path)
+        public async Task SaveLogs()
         {
-            using(StreamWriter sw = new StreamWriter("/"+path))
-            {
-                foreach(string line in Log)
-                {
-                    sw.WriteLine(line);
-                }
-            }
+            Console.WriteLine("Saving logs...");
+            // симуляція зберігання великого файлу
+            await Task.Delay(5000);
+            string path = _path.Replace("{date}", DateTime.Now.ToString("dd_MM_yyyy"));
+            string json = JsonSerializer.Serialize(logs);
+            File.AppendAllText(path, json);
         }
     }
 }
+

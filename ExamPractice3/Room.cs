@@ -6,35 +6,35 @@ using System.Threading.Tasks;
 
 namespace ExamPractice3
 {
-    public class Room
+    public abstract class Room
     {
-        public int _id { get; private set; }
-        public readonly string _name;
-        public int _cost { get; private set; }
-        public string Occupier { get; set; }
-        public string Status { get; set; }
+        public int Id { get; private set; }
+        public string Name { get; init; }
+        public int Cost { get; private set; }
+        public string? Occupier { get; set; }
+        public RoomStatus Status { get; set; }
+
         private Dictionary<string, bool> additionalFeatures = new Dictionary<string, bool>()
         {
-            {"Free Coffe" ,false},{"Pool" ,false },{"Breakfast" , false}
+            {"Free Coffe", false},
+            {"Pool", false },
+            {"Breakfast", false}
         };
 
         public Room(int id, string name, int cost)
         {
-            _id = id;
-            _name = name;
-            _cost = cost;
+            Id = id;
+            Name = name;
+            Cost = cost;
         }
 
         public bool IsFeatureAvailable(string featureName)
         {
-            if (additionalFeatures.ContainsKey(featureName)) 
+            if (additionalFeatures.ContainsKey(featureName))
             {
-                return additionalFeatures[featureName]; 
-            } 
-            else 
-            {
-                throw new Exception("no such feature");
+                return additionalFeatures[featureName];
             }
+            return false;
         }
     }
 }
