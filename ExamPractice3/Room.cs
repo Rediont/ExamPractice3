@@ -11,8 +11,8 @@ namespace ExamPractice3
         public int _id { get; private set; }
         public readonly string _name;
         public int _cost { get; private set; }
-        public string _occupier { get; set; }
-        public string _status { get; set; }
+        public string Occupier { get; set; }
+        public string Status { get; set; }
         private Dictionary<string, bool> additionalFeatures = new Dictionary<string, bool>()
         {
             {"Free Coffe" ,false},{"Pool" ,false },{"Breakfast" , false}
@@ -36,6 +36,5 @@ namespace ExamPractice3
                 throw new Exception("no such feature");
             }
         }
-
     }
 }

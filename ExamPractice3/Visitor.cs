@@ -17,6 +17,12 @@ namespace ExamPractice3
             _roomId = roomId;
         }
 
+        public async Task<bool> StayInRoom(int time) 
+        {
+            Task.Delay(time * 1000);
+            return true;
+        }
+
         public void CheckOut()
         {
             _roomId = 0;

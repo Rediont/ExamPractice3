@@ -14,36 +14,61 @@ namespace ExamPractice3
         public event RoomStatusHandler OnCheckIn;
         public event RoomStatusHandler OnCheckOut;
 
-        public async Task<bool> CheckIn(int roomId, Visitor visitor,int daysRented)
+        public bool CheckIn(int roomId, Visitor visitor,int daysRented)
         {
-            Room room = rooms[rooms.Keys.FirstOrDefault(x => x == roomId)];
-            if (rooms[room._id]._status == "Available")
+            if (rooms.ContainsKey(roomId)) 
             {
-                visitor.RoomId = roomId;
-                room._occupier = visitor.Name;
-                rooms[room._id]._status = "Occupied";
-                await Task.Delay(daysRented * 1000);
-                return true;
+                Room room = rooms[roomId];
+                if (rooms[room._id].Status == "Available")
+                {
+                    visitor.RoomId = roomId;
+                    room.Occupier = visitor.Name;
+                    rooms[room._id].Status = "Occupied";
+                    Log.Add($"{room._name} is occupied by {visitor.Name}");
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Room unaviable");
+                }
             }
             else
             {
-                throw new Exception("Room unaviable");
+                throw new Exception($"There is no room with room Id: {roomId}");
             }
         }
 
-        public async Task<bool> CheckOut(int roomId, Visitor visitor, int daysRented)
+        public void StartCleanUp(Room room)
         {
-            if (CheckIn(roomId, visitor, daysRented).Result)
+            room.Status = "Cleaning";
+            Log.Add($"Started cleaning of {room._name}");
+        }
+
+        public bool CheckOut(int roomId, Visitor visitor, int daysRented)
+        {
+            if (CheckIn(roomId, visitor, daysRented))
             {
                 Room room = rooms[rooms.Keys.FirstOrDefault(x => x == roomId)];
                 visitor.CheckOut();
-                room._occupier = null;
-                rooms[room._id]._status = "Open";
+                room.Occupier = null;
+                rooms[room._id].Status = "Available";
+                Log.Add($"{visitor.Name} checked out from {room._name}");
                 return true;
             }
             else
             {
                 throw new Exception("somethig went wrong");
+            }
+        }
+
+        public void Save(string path)
+        {
+            using(StreamWriter sw = new StreamWriter("/"+path))
+            {
+                foreach(string line in Log)
+                {
+                    sw.WriteLine(line);
+                }
             }
         }
     }
