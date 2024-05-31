@@ -38,9 +38,9 @@ namespace ExamPractice3
                     visitor.RoomId = roomId;
                     room.Occupier = visitor.Name;
                     room.Status = RoomStatus.Occupied;
-
+                    Console.WriteLine($"{visitor.Name} checked in {room.Name}");
                     logs.Add(new LogInfo(visitor, roomId, "check in"));
-
+                    await visitor.StayInRoom(daysRented);
                     return true;
                 }
                 else
@@ -55,7 +55,7 @@ namespace ExamPractice3
                     visitor.RoomId = roomId;
                     room.Occupier = visitor.Name;
                     room.Status = RoomStatus.Occupied;
-
+                    Console.WriteLine($"{visitor.Name} checked in {room.Name}");
                     logs.Add(new LogInfo(visitor, roomId, "check in"));
                     return true;
                 }
@@ -69,8 +69,10 @@ namespace ExamPractice3
         public async Task CleanUp(Room room)
         {
             room.Status = RoomStatus.Cleaning;
+            Console.WriteLine($"Cleaning in {room.Name} started");
             logs.Add(new LogInfo("Cleaning", "Cleaning has started"));
             await Task.Delay(5000);
+            Console.WriteLine($"Cleaning in {room.Name} finished");
             logs.Add(new LogInfo("Cleaning", "Cleaning has ended"));
             room.Status = RoomStatus.Available;
         }
@@ -83,6 +85,7 @@ namespace ExamPractice3
                 visitor.CheckOut();
                 room.Occupier = null;
                 rooms[room.Id].Status = RoomStatus.Available;
+                Console.WriteLine($"{visitor.Name} checked ouf from {room.Name}");
                 logs.Add(new LogInfo(visitor, roomId, "check out"));
 
                 OnCheckOut?.Invoke(room);
