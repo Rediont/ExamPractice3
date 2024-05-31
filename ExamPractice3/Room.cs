@@ -8,26 +8,24 @@ namespace ExamPractice3
 {
     public class Room
     {
-        private string id;
-        public readonly string Name;
-        private int cost;
+        public string _id { get; private set; }
+        public readonly string _name;
+        public int _cost { get; private set; }
+        public string _occupier { get; set; }
+        public string _status { get; set; }
         private Dictionary<string, bool> additionalFeatures = new Dictionary<string, bool>()
         {
             {"Free Coffe" ,false},{"Pool" ,false },{"Breakfast" , false}
         };
-        private string occupier;
-        public string Occupier { get {return occupier;} set { occupier = value; } }
-        public int Cost { get { return cost; } }
-        public string Id { get { return id; } }
 
         public Room(string id, string name, int cost)
         {
-            this.id = id;
-            Name = name;
-            this.cost = cost;
+            _id = id;
+            _name = name;
+            _cost = cost;
         }
 
-        public bool AviableFeatures(string featureName)
+        public bool IsFeatureAvailable(string featureName)
         {
             if (additionalFeatures.ContainsKey(featureName)) 
             {

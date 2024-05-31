@@ -8,9 +8,8 @@ namespace ExamPractice3
 {
     public class Visitor
     {
-        private string _name;
+        public string Name { get; private set; }
         private string roomId;
-        public string Name { get { return _name; } set { _name = value; } }
         public string RoomId { get { return roomId; } set { roomId = value; } }
     }
 }
