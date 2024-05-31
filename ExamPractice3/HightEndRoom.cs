@@ -13,7 +13,7 @@ namespace ExamPractice3
             {"Free Coffe" ,false},{"Pool" ,false },{"Breakfast" , true}
         };
 
-        public GoodRoom(string id, string name, int cost) : base(id, name, cost){}
+        public GoodRoom(int id, string name, int cost) : base(id, name, cost){}
     }
 
     public class HightEndRoom : Room
@@ -23,7 +23,7 @@ namespace ExamPractice3
             {"Free Coffe" ,true},{"Pool" ,true },{"Breakfast" , true}
         };
 
-        public HightEndRoom(string id,string name, int cost) : base(id, name, cost){}
+        public HightEndRoom(int id,string name, int cost) : base(id, name, cost){}
     }
 
 }

@@ -8,7 +8,7 @@ namespace ExamPractice3
 {
     public class Room
     {
-        public string _id { get; private set; }
+        public int _id { get; private set; }
         public readonly string _name;
         public int _cost { get; private set; }
         public string _occupier { get; set; }
@@ -18,7 +18,7 @@ namespace ExamPractice3
             {"Free Coffe" ,false},{"Pool" ,false },{"Breakfast" , false}
         };
 
-        public Room(string id, string name, int cost)
+        public Room(int id, string name, int cost)
         {
             _id = id;
             _name = name;
